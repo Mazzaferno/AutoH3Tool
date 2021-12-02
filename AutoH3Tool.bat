@@ -122,7 +122,7 @@ set output=%output:~1%
 
 echo starting command:Tool %command% %TD%%output%
 cd ../
-echo tool %command% %TD%%output%
+tool %command% %TD%%output%
 pause
 goto intro
 
