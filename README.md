@@ -1,6 +1,7 @@
 requirements:
 1. AutoH3Tool must be in the H3EK folder
 2. selected file/folder must be within H3EK\data (or tags) folder depending on the command
+3. exported tags must be within \tags\.. imported data must be in \data\..
 -------------------------------------------------------------------------------------------
 note: AutoH3Tool uses for full directory addresses do not edit them or it will not work
 	example: [C:\programs\Steam\steamapps\common\]H3EK\data\objects
