@@ -1,16 +1,16 @@
 @echo off
-
+title AutoH3Tool
 if exist tool.exe goto intro
 goto rats
 :intro
-title AutoH3Tool
+
 set TD=
 set scnr=0
 set xBit=0
 set file=null
 set x=
 cls
-mode con: cols=75 lines=50
+
 color 0D
 echo "                            _  --  _                        
 echo "     ___         __        / \|  |/ \  __________  ____  __ 
@@ -133,7 +133,7 @@ set /p file=
 
 :exe
 if %file%==null goto nofile
-mode con: cols=215 lines=50
+
 COLOR 0B
 cls
 
@@ -151,7 +151,7 @@ echo +-------------------------------------------------+
 echo starting command:Tool %command% %TD%%output% %x%
 echo +-------------------------------------------------+
 cd ../
-	if %xBit%==1 set x=%cd%\data\%output%
+	if %xBit%==1 set x=%cd%\data\bitmap_exports\
 	
 tool %command% %TD%%output% %x%
 echo +--------------------------------------------------+
