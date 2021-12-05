@@ -17,3 +17,5 @@ so you have to type less! after selecting a command drag and drop your file or f
 
 v v check for updates! v v 
 https://github.com/Mazzaferno/AutoH3Tool
+
+Please send me feedback on discord: Mazzaferno#4121
