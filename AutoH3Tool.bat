@@ -1,16 +1,16 @@
 @echo off
-title AutoH3Tool
+
 if exist tool.exe goto intro
 goto rats
 :intro
-
+title AutoH3Tool
 set TD=
 set scnr=0
 set xBit=0
 set file=null
 set x=
 cls
-
+mode con: cols=75 lines=50
 color 0D
 echo "                            _  --  _                        
 echo "     ___         __        / \|  |/ \  __________  ____  __ 
@@ -25,32 +25,46 @@ echo             this tool automates H3EK's Tool.exe commands
 echo +-----------------------------------------------------------------------+
 echo   exported tags must be within \tags\.. imported data must be in \data\..
 echo +-----------------------------------------------------------------------+
-echo [1] - Structure
-echo [2] - Build-cache-file
-echo [3] - Import model - Bulk - Render - Physics - Collision
-echo [4] - Model-animations
-echo [5] - Bitmaps - Bitmap_single
-echo [6] - Extract-import-info
-echo [7] - Export-bitmap
-echo +-----------------------------------------------------------------------+
-set /p c=Choice:
-	if %c%==1 goto 1
-	if %c%==2 goto 2
-	if %c%==3 goto 3
-	if %c%==4 goto 4
-	if %c%==5 goto 5
-	if %c%==6 goto 6
-	if %c%==7 goto 7
-	if %c% gtr 7  goto intro
+echo [1]    - Import level - Structure
+echo [2]    - Build map file - Build-cache-file
+echo [3]    - Import model - Bulk - Render - Physics - Collision
+echo [4]    - Import animations - Model-animations
+echo [5][B] - Import Bitmaps - Bitmap_single
+echo [6]    - Export models - Extract-import-info
+echo [7]    - Export-bitmap
+echo [Q]    - Shader stuff
+echo [I]    - Extra information
+set /p Choice=Choice:
+	if %Choice%==1 goto 1
+	if %Choice%==2 goto 2
+	if %Choice%==3 goto 3
+	if %Choice%==4 goto 4
+	if %Choice%==5 goto 5
+	if %Choice%==b goto 5
+	if %Choice%==B goto 5
+	if %Choice%==6 goto 6
+	if %Choice%==7 goto 7
+	if %Choice%==Q goto Q
+	if %Choice%==q goto Q
+	if %Choice%==I goto	info
+	if %Choice%==i goto info
+	if %Choice% gtr 7  goto intro
+	
+:info
+echo press enter to repeat last choice 
+Pause >nul
+goto intro
 	
 		:1
 		set command=structure
 		set example=\data\levels\multi\test\structure\test.ass
+		set usage=create a .scenario and .scenario_structure_bsp from an .ass file
 		cd data
 		goto selection
 		:2
 		set command=build-cache-file
 		set example=\tags\levels\multi\test\test.scenario
+		set usage=create a .map file from a .scenario
 		set scnr=1
 		cd tags
 		set TD=tags\
@@ -64,10 +78,13 @@ set /p c=Choice:
 		echo +------------------------------+
 		set /p c=Choice:
 		set example=data\objects\multi\test\render\render(.jms/.jmi)
+		set usage=create a (.render)(.collision)(.physics)_model from a .jms or .jmi file
 			
 			if %c%==1 set command=bulk-import-model-folder
-				if %c%==1 set example=data\objects\multi\test				
+				if %c%==1 set example=data\objects\weapons\example
+				if %c%==1 set usage=bulk import render, collision, and physics models from .jms or .jmi files (Must select folder containing render, physics, collision folders)
 			if %c%==2 set command=Render
+			if %c%==2 set x=final
 			if %c%==3 set command=physics
 			if %c%==4 set command=collision
 			if %c% gtr 4 goto intro
@@ -83,6 +100,7 @@ set /p c=Choice:
 			if %c%==1 set command=model-animations
 			if %c%==2 set command=model-animations-uncompressed
 			set example=data\objects\object\animations
+			set usage=import .jma file to animation tag (Must select folder containing .jma file)
 			cd data
 			goto selection
 		:5
@@ -91,6 +109,7 @@ set /p c=Choice:
 		echo [2] - Bitmaps "bulk"
 		echo +------------------+
 		set /p c=Choice:
+			set usage=import .tif/tiff files to .bitmaps either bulk for all in containing folder or for a single bitmap
 			if %c%==1 set command=Bitmap_single
 			if %c%==2 set command=Bitmaps
 			if %c%==1 set example=data\levels\multi\chill\bitmaps\example(.tiff/.tif)
@@ -100,6 +119,7 @@ set /p c=Choice:
 		:6
 		set command=extract-import-info
 		set example=tags\objects\weapons\example\example(.render)(.collision)(.physics)(.scenario_structure_bsp)
+		set usage=extract .jms or .ass file from selected tag
 		cd tags
 		set TD=tags\
 		goto selection
@@ -108,32 +128,70 @@ set /p c=Choice:
 		echo [1] - Export-bitmap-DDS
 		echo [2] - Export-bitmap-PFM
 		echo [3] - Export-bitmap-TGA
+		::echo [4] - export-bitmap-TIFF
 		echo +------------------------------+
 		set /p c=Choice:
 			if %c%==1 set command=export-bitmap-dds
 			if %c%==2 set command=export-bitmap-pfm
 			if %c%==3 set command=export-bitmap-tga
+			::if %c%==4 call bitmap-extractor.pyw
+			
 			if exist data\bitmap_exports goto 7-1
 			goto MD
 			:7-1
 			set xBit=1
 			cd tags
 			set example=tags\objects\weapons\example\bitmaps\example.bitmap
+			set usage=exports a "file.bitmap" to file(.DDS)(.PFM)(.TGA)
 			goto selection
+
+			if exist data\bitmap_exports goto 7-1
+			goto MD
+			:7-1
+			set xBit=1
+			cd tags
+			set example=tags\objects\weapons\example\bitmaps\example.bitmap
+			set usage=exports a "file.bitmap" to file(.DDS)(.PFM)(.TGA)
+			goto selection
+			:Q
+	
+			echo +------------------------------+
+			echo [1] - compile-shader
+			echo [2] - shaders
+			echo [3] - dump-render-method-options
+			echo +------------------------------+
+			set /p c=Choice:
+			if %c%==1 set command=compile-shader
+			if %c%==2 set command=shaders
+			if %c%==1 set usage=Compiles the template needed for a specific shader.
+			if %c%==1 set example=example\shaders\example.shader
+			if %c%==2 set usage=Compiles non-template shaders, only useful if you are writing custom shaders.
+			if %c%==2 set example=example\shaders - or leave blank
+			call AutoH3Tool\shader-compile.bat
+	
+
 		
 :selection
-set file=null
+set file=
 echo Command: [%command%]
+echo usage: %usage%
 echo +-------------------------------------------------------+
 echo         DRAG FILE OR FOLDER HERE AND PRESS ENTER
 echo ---------------------------------------------------------
 echo example: ...%example%
 echo +-------------------------------------------------------+
 set /p file=
+if [%file%]==[] goto nofile
+set file=%file:"=%
+
+
 
 :exe
-if %file%==null goto nofile
 
+::this broke something!?
+::if %file%==null goto nofile
+
+mode con: cols=215 lines=50
 COLOR 0B
 cls
 
@@ -146,16 +204,20 @@ set output=%output:~1%
 	if %scnr%==1 set output=%output:~0,-9%
 	if %xBit%==1 set output=%output:~0,-7%
 	
+
 :tool
 echo +-------------------------------------------------+
 echo starting command:Tool %command% %TD%%output% %x%
 echo +-------------------------------------------------+
 cd ../
 	if %xBit%==1 set x=%cd%\data\bitmap_exports\
-	
+echo tool %command% %TD%%output% %x%
+
+
 tool %command% %TD%%output% %x%
 echo +--------------------------------------------------+
 if %xBit%==1 goto Bitx
+timeout /t 1 /nobreak >nul
 pause
 goto intro
 
@@ -164,6 +226,7 @@ md data\bitmap_exports
 goto 7-1
 :Bitx
 echo Export location:%cd%\data\bitmap_exports
+explorer "%cd%\data\bitmap_exports"
 pause
 goto intro
 
