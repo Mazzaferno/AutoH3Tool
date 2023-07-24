@@ -1,5 +1,5 @@
 @echo off
-
+set tool=Tool_fast
 if exist tool.exe goto intro
 goto rats
 :intro
@@ -10,7 +10,7 @@ set xBit=0
 set file=null
 set x=
 cls
-mode con: cols=75 lines=50
+mode con: cols=75 lines=300
 color 0D
 echo "                            _  --  _                        
 echo "     ___         __        / \|  |/ \  __________  ____  __ 
@@ -27,17 +27,22 @@ echo   exported tags must be within \tags\.. imported data must be in \data\..
 echo +-----------------------------------------------------------------------+
 echo [1]    - Import level - Structure
 echo [2]    - Build map file - Build-cache-file
-echo [3]    - Import model - Bulk - Render - Physics - Collision
+echo [3][R] - Import model - Bulk - Render - Physics - Collision
 echo [4]    - Import animations - Model-animations
 echo [5][B] - Import Bitmaps - Bitmap_single
 echo [6]    - Export models - Extract-import-info
 echo [7]    - Export-bitmap
+echo [M]    - Monitor-bitmaps-models-structures
 echo [Q]    - Shader stuff
+echo [T]    - Toggle Tool_fast - Curret_mode = %tool%
+echo [C]    - Custom command
 echo [I]    - Extra information
 set /p Choice=Choice:
 	if %Choice%==1 goto 1
 	if %Choice%==2 goto 2
 	if %Choice%==3 goto 3
+	if %Choice%==R goto 3
+	if %Choice%==r goto 3
 	if %Choice%==4 goto 4
 	if %Choice%==5 goto 5
 	if %Choice%==b goto 5
@@ -48,12 +53,34 @@ set /p Choice=Choice:
 	if %Choice%==q goto Q
 	if %Choice%==I goto	info
 	if %Choice%==i goto info
+	if %Choice%==M goto M
+	if %Choice%==m goto M
+	if %Choice%==t goto t
+	if %Choice%==T goto t
+	if %Choice%==C goto C
+	if %Choice%==c goto C
 	if %Choice% gtr 7  goto intro
 	
 :info
 echo press enter to repeat last choice 
 Pause >nul
 goto intro
+		:C
+		echo Note: Do not add the Tool prefix
+		set /p Choice=Command:
+		set command=%choice%
+		cd data
+		goto tool
+		goto intro
+		:t
+		if "%tool%"=="Tool_fast" (
+    	set "tool=Tool"
+    	goto intro
+		)
+		if "%tool%"=="Tool" (
+    	set "tool=Tool_fast"
+    	goto intro
+		)
 	
 		:1
 		set command=structure
@@ -75,6 +102,7 @@ goto intro
 		echo [2] - Render
 		echo [3] - physics
 		echo [4] - collision
+		echo [5] - sky
 		echo +------------------------------+
 		set /p c=Choice:
 		set example=data\objects\multi\test\render\render(.jms/.jmi)
@@ -87,7 +115,8 @@ goto intro
 			if %c%==2 set x=final
 			if %c%==3 set command=physics
 			if %c%==4 set command=collision
-			if %c% gtr 4 goto intro
+			if %c%==5 set command=render-sky
+			if %c% gtr 5 goto intro
 
 			cd data
 			goto selection
@@ -168,7 +197,19 @@ goto intro
 			if %c%==2 set usage=Compiles non-template shaders, only useful if you are writing custom shaders.
 			if %c%==2 set example=example\shaders - or leave blank
 			call AutoH3Tool\shader-compile.bat
+			:M
 	
+			echo +------------------------------+
+			echo [1] - Bitmaps
+			echo [2] - Models
+			echo [3] - Structure
+			echo +------------------------------+
+			set /p c=Choice:
+			if %c%==1 set command=Monitor-bitmaps
+			if %c%==2 set command=Monitor-models
+			if %c%==3 set command=structures
+			start cmd /k "color 0D & tool %command% & exit"
+			goto intro
 
 		
 :selection
@@ -207,14 +248,14 @@ set output=%output:~1%
 
 :tool
 echo +-------------------------------------------------+
-echo starting command:Tool %command% %TD%%output% %x%
+echo starting command:%Tool% %command% %TD%%output% %x%
 echo +-------------------------------------------------+
 cd ../
 	if %xBit%==1 set x=%cd%\data\bitmap_exports\
-echo tool %command% %TD%%output% %x%
+echo %tool% %command% %TD%%output% %x%
 
 
-tool %command% %TD%%output% %x%
+%tool% %command% %TD%%output% %x%
 echo +--------------------------------------------------+
 if %xBit%==1 goto Bitx
 timeout /t 1 /nobreak >nul
