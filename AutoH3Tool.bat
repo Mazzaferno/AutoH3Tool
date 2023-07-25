@@ -207,7 +207,7 @@ goto intro
 			set /p c=Choice:
 			if %c%==1 set command=Monitor-bitmaps
 			if %c%==2 set command=Monitor-models
-			if %c%==3 set command=structures
+			if %c%==3 set command=Monitor-structures
 			start cmd /k "color 0D & tool %command% & exit"
 			goto intro
 
